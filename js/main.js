@@ -32,7 +32,73 @@
   }
 
   /* ---------- ввод ---------- */
-  const input = { up: false, down: false, left: false, right: false, sprint: false, pass: false, shoot: false, through: false, switch: false };
+  const input = { up: false, down: false, left: false, right: false, sprint: false, pass: false, shoot: false, through: false, switch: false, ax: 0, ay: 0 };
+
+  /* ---------- сенсорное управление ---------- */
+  const IS_TOUCH = ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || location.search.includes('touch');
+  if (IS_TOUCH) {
+    document.body.classList.add('touch');
+    setupTouchControls();
+  }
+  function setupTouchControls() {
+    const zone = $('joy-zone'), base = $('joy-base'), knob = $('joy-knob');
+    const R = 55; // радиус хода джойстика, px
+    let joyId = null, ox = 0, oy = 0;
+
+    zone.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (joyId !== null) return;
+      const t = e.changedTouches[0];
+      joyId = t.identifier; ox = t.clientX; oy = t.clientY;
+      base.style.left = ox + 'px'; base.style.top = oy + 'px';
+      base.classList.remove('hidden');
+      knob.style.transform = 'translate(0px, 0px)';
+    }, { passive: false });
+
+    zone.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      for (const t of e.changedTouches) {
+        if (t.identifier !== joyId) continue;
+        let dx = t.clientX - ox, dy = t.clientY - oy;
+        const len = Math.hypot(dx, dy);
+        if (len > R) { dx = dx / len * R; dy = dy / len * R; }
+        knob.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+        if (len < 12) { input.ax = 0; input.ay = 0; } // мёртвая зона
+        else { const n = Math.max(len, R); input.ax = dx / Math.min(n, R) ; input.ay = dy / Math.min(n, R); }
+      }
+    }, { passive: false });
+
+    const joyEnd = (e) => {
+      for (const t of e.changedTouches) {
+        if (t.identifier !== joyId) continue;
+        joyId = null; input.ax = 0; input.ay = 0;
+        base.classList.add('hidden');
+      }
+    };
+    zone.addEventListener('touchend', joyEnd);
+    zone.addEventListener('touchcancel', joyEnd);
+
+    // кнопки действий
+    document.querySelectorAll('.tbtn').forEach((btn) => {
+      const act = btn.dataset.act;
+      btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        btn.classList.add('held');
+        if (act === 'sprint') input.sprint = true;
+        else input[act] = true;
+      }, { passive: false });
+      const end = (e) => {
+        e.preventDefault();
+        btn.classList.remove('held');
+        if (act === 'sprint') input.sprint = false;
+      };
+      btn.addEventListener('touchend', end, { passive: false });
+      btn.addEventListener('touchcancel', end, { passive: false });
+    });
+
+    $('touch-pause').addEventListener('touchstart', (e) => { e.preventDefault(); togglePause(); }, { passive: false });
+    $('touch-pause').addEventListener('click', (e) => { e.preventDefault(); togglePause(); });
+  }
   const KEYMAP = {
     ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
     KeyW: 'up', KeyS: 'down', KeyA: 'left', KeyD: 'right',

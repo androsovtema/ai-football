@@ -2,10 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>AI футбол — ЧМ-2026</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
-<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css?v=2">
 </head>
 <body>
 
@@ -104,6 +105,21 @@
     </div>
     <div id="tip-bar"></div>
   </div>
+  <!-- Сенсорное управление (телефоны и планшеты) -->
+  <div id="touch-controls">
+    <div id="joy-zone">
+      <div id="joy-base" class="hidden"><div id="joy-knob"></div></div>
+    </div>
+    <div id="touch-buttons">
+      <button class="tbtn tbtn-small" data-act="switch">👤<span>смена</span></button>
+      <button class="tbtn" data-act="through">↗<span>вразрез</span></button>
+      <button class="tbtn tbtn-main" data-act="pass">⚽<span>пас</span></button>
+      <button class="tbtn tbtn-main" data-act="shoot">🎯<span>удар</span></button>
+      <button class="tbtn tbtn-hold" data-act="sprint">💨<span>спринт</span></button>
+    </div>
+    <button id="touch-pause">⏸</button>
+  </div>
+  <div id="rotate-hint">📱↻<br>Поверните телефон горизонтально</div>
   <!-- Пауза -->
   <div id="pause-overlay" class="overlay hidden">
     <div class="panel small">
@@ -129,11 +145,11 @@
   </div>
 </div>
 
-<script src="js/teams.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/engine.js"></script>
-<script src="js/render.js"></script>
-<script src="js/ui.js"></script>
-<script src="js/main.js"></script>
+<script src="js/teams.js?v=2"></script>
+<script src="js/audio.js?v=2"></script>
+<script src="js/engine.js?v=2"></script>
+<script src="js/render.js?v=2"></script>
+<script src="js/ui.js?v=2"></script>
+<script src="js/main.js?v=2"></script>
 </body>
 </html>

@@ -210,6 +210,7 @@ class Match {
     if (!p) return;
     let ix = (input.right ? 1 : 0) - (input.left ? 1 : 0);
     let iy = (input.down ? 1 : 0) - (input.up ? 1 : 0);
+    if (input.ax || input.ay) { ix = input.ax; iy = input.ay; } // виртуальный джойстик
     const has = this.ball.owner === p;
     if (ix || iy) {
       const len = Math.hypot(ix, iy); ix /= len; iy /= len;
