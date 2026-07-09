@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI футбол — ЧМ-2026</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ГЛАВНОЕ МЕНЮ -->
+<div id="screen-menu" class="screen active">
+  <div class="menu-box">
+    <div class="logo">⚽</div>
+    <h1 class="title">AI футбол</h1>
+    <p class="subtitle">Чемпионат мира — 2026 · Реальные команды и игроки</p>
+    <button class="btn btn-primary" id="btn-start">▶ &nbsp;Начать игру</button>
+    <button class="btn" id="btn-teams">👥 &nbsp;Посмотреть команды</button>
+    <button class="btn" id="btn-settings">⚙ &nbsp;Настройки</button>
+    <p class="footnote">Некоммерческий фанатский проект в ознакомительных целях</p>
+  </div>
+</div>
+
+<!-- НАСТРОЙКИ -->
+<div id="screen-settings" class="screen">
+  <div class="panel">
+    <h2>⚙ Настройки</h2>
+    <label class="setting-row">
+      <span>Звук (свисток, трибуны, удары)</span>
+      <input type="checkbox" id="set-sound" checked>
+    </label>
+    <label class="setting-row">
+      <span>Длительность матча <small>(реального времени; на табло всегда идут 90 минут)</small></span>
+      <select id="set-len">
+        <option value="4">Короткий — 4 минуты</option>
+        <option value="6" selected>Средний — 6 минут</option>
+        <option value="10">Длинный — 10 минут</option>
+      </select>
+    </label>
+    <label class="setting-row">
+      <span>Сложность соперника</span>
+      <select id="set-diff">
+        <option value="0">Лёгкая</option>
+        <option value="1" selected>Обычная</option>
+        <option value="2">Сложная</option>
+      </select>
+    </label>
+    <label class="setting-row">
+      <span>Правило офсайда <small>(«вне игры» — как в настоящем футболе)</small></span>
+      <input type="checkbox" id="set-offside" checked>
+    </label>
+    <button class="btn btn-primary" id="btn-settings-back">Сохранить и вернуться</button>
+  </div>
+</div>
+
+<!-- ПРОСМОТР КОМАНД -->
+<div id="screen-teams" class="screen">
+  <div class="panel wide">
+    <h2>👥 Команды ЧМ-2026</h2>
+    <p class="hint-line">Все команды — настоящие участники чемпионата мира 2026 (США · Канада · Мексика). Рейтинги основаны на реальных выступлениях на турнире.</p>
+    <div id="teams-list"></div>
+    <button class="btn btn-primary" id="btn-teams-back">← В меню</button>
+  </div>
+</div>
+
+<!-- ВЫБОР КОМАНД -->
+<div id="screen-select" class="screen">
+  <div class="panel wide">
+    <h2 id="select-title">Выберите свою команду</h2>
+    <div id="select-grid" class="select-grid"></div>
+    <div id="select-detail" class="select-detail"></div>
+    <div class="row-buttons">
+      <button class="btn" id="btn-select-back">← Назад</button>
+      <button class="btn btn-primary hidden" id="btn-select-go">Начать матч ⚽</button>
+    </div>
+  </div>
+</div>
+
+<!-- МАТЧ -->
+<div id="screen-match" class="screen">
+  <canvas id="pitch"></canvas>
+  <!-- ТВ-табло -->
+  <div id="hud-top">
+    <div id="scoreboard">
+      <span class="sb-team" id="sb-t0"><i class="kitdot" id="sb-k0"></i><b id="sb-n0">—</b></span>
+      <span class="sb-score" id="sb-score">0 : 0</span>
+      <span class="sb-team" id="sb-t1"><b id="sb-n1">—</b><i class="kitdot" id="sb-k1"></i></span>
+      <span class="sb-clock" id="sb-clock">00:00</span>
+      <span class="sb-half" id="sb-half">1-й тайм</span>
+    </div>
+    <div id="possession-chip">⚽ —</div>
+  </div>
+  <div id="match-message" class="hidden"></div>
+  <div id="hud-bottom">
+    <div id="controls-hint">
+      <span><b>WASD / стрелки</b> движение</span>
+      <span><b>Shift</b> ускорение</span>
+      <span><b>Пробел</b> пас</span>
+      <span><b>X</b> удар</span>
+      <span><b>C</b> пас вразрез</span>
+      <span><b>E</b> сменить игрока</span>
+      <span><b>P</b> пауза</span>
+    </div>
+    <div id="tip-bar"></div>
+  </div>
+  <!-- Пауза -->
+  <div id="pause-overlay" class="overlay hidden">
+    <div class="panel small">
+      <h2>Пауза</h2>
+      <button class="btn btn-primary" id="btn-resume">Продолжить</button>
+      <label class="setting-row"><span>Звук</span><input type="checkbox" id="pause-sound"></label>
+      <button class="btn" id="btn-restart-match">Начать матч заново</button>
+      <button class="btn btn-danger" id="btn-quit-match">Выйти в меню</button>
+    </div>
+  </div>
+</div>
+
+<!-- РЕЗУЛЬТАТ -->
+<div id="screen-result" class="screen">
+  <div class="panel">
+    <h2 id="result-title">Матч окончен</h2>
+    <div id="result-score" class="result-score">0 : 0</div>
+    <div id="result-stats"></div>
+    <div class="row-buttons">
+      <button class="btn btn-primary" id="btn-again">Играть ещё раз</button>
+      <button class="btn" id="btn-result-menu">В меню</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/teams.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
